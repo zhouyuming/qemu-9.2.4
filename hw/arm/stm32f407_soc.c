@@ -26,11 +26,11 @@ static const int usart_irq[STM_NUM_USARTS] = {
     37, 38, 39, 71
 };
 
-// static const int exti_irq[] =
-// {
-//     6, 7, 8, 9, 10, 23, 23, 23, 23, 23, 40,
-//     40, 40, 40, 40, 40
-// };
+static const int exti_irq[] =
+{
+    6, 7, 8, 9, 10, 23, 23, 23, 23, 23, 40,
+    40, 40, 40, 40, 40
+};
 
 // static const int timer_irq[STM_NUM_TIMERS] = {
 //     28, 29, 30, 50
@@ -53,23 +53,15 @@ static void stm32f407_soc_initfn(Object *obj)
                                 TYPE_STM32F4XX_USART);
     }
 
+    object_initialize_child(obj, "exti", &s->exti, TYPE_STM32F4XX_EXTI);
+
     s->sysclk = qdev_init_clock_in(DEVICE(s), "sysclk", NULL, NULL, 0);
     s->refclk = qdev_init_clock_in(DEVICE(s), "refclk", NULL, NULL, 0);
-    // sysbus_init_child_obj(obj, "exti", &s->exti, sizeof(s->exti),
-    //                        TYPE_STM32F4XX_EXTI);
     // sysbus_init_child_obj(obj, "flash", &s->flash, sizeof(s->flash),
     //                     TYPE_STM32F4XX_FLASH);
 
-    // object_initialize(&s->rcc, sizeof(s->rcc), TYPE_STM32F4XX_RCC);
-    // qdev_set_parent_bus(DEVICE(&s->rcc), sysbus_get_default());
-
     // object_initialize(&s->power, sizeof(s->power), TYPE_STM32F4XX_POWER);
     // qdev_set_parent_bus(DEVICE(&s->power), sysbus_get_default());
-
-    // for (i = 0; i < STM_NUM_USARTS; i++) {
-    //     object_initialize(&s->usart[i], sizeof(s->usart[i]), TYPE_STM32F4XX_USART);
-    //     qdev_set_parent_bus(DEVICE(&s->usart[i]), sysbus_get_default());
-    // }
 
     // for (i = 0; i < STM_NUM_TIMERS; i++) {
     //     object_initialize(&s->timer[i], sizeof(s->timer[i]), TYPE_STM32F4XX_TIMER);
@@ -189,21 +181,19 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
         sysbus_connect_irq(busdev, 0, qdev_get_gpio_in(armv7m, usart_irq[i]));
     }
 
-    // /* EXTI Controller */
-    // dev = DEVICE(&s->exti);
-    // object_property_set_bool(OBJECT(&s->exti), true, "realized", &err);
-    // if (err != NULL) {
-    //     error_propagate(errp, err);
-    //     return;
-    // }
-    // busdev = SYS_BUS_DEVICE(dev);
-    // sysbus_mmio_map(busdev, 0, EXIT_BASE_ADDRESS);
-    // for (i = 0; i < 16; i++) {
-    //     sysbus_connect_irq(busdev, i, qdev_get_gpio_in(armv7m, exti_irq[i]));
-    // }
-    // for (i = 0; i < 16; i++) {
-    //     qdev_connect_gpio_out(DEVICE(&s->syscfg), i, qdev_get_gpio_in(dev, i));
-    // }
+    /* EXTI device */
+    dev = DEVICE(&s->exti);
+    if (!sysbus_realize(SYS_BUS_DEVICE(&s->exti), errp)) {
+        return;
+    }
+    busdev = SYS_BUS_DEVICE(dev);
+    sysbus_mmio_map(busdev, 0, EXIT_BASE_ADDR);
+    for (i = 0; i < 16; i++) {
+        sysbus_connect_irq(busdev, i, qdev_get_gpio_in(armv7m, exti_irq[i]));
+    }
+    for (i = 0; i < 16; i++) {
+        qdev_connect_gpio_out(DEVICE(&s->syscfg), i, qdev_get_gpio_in(dev, i));
+    }
 
     // /* System Power */
     // dev = DEVICE(&s->power);
