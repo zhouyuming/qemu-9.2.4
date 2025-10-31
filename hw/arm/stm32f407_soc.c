@@ -67,7 +67,7 @@ static void stm32f407_soc_initfn(Object *obj)
 
     object_initialize_child(obj, "power", &s->power, TYPE_STM32F4XX_POWER);
 
-    object_initialize_child(obj, "flash", &s->flash, TYPE_STM32F4XX_FLASH);
+    object_initialize_child(obj, "flash1", &s->flash1, TYPE_STM32F4XX_FLASH);
 
     s->sysclk = qdev_init_clock_in(DEVICE(s), "sysclk", NULL, NULL, 0);
     s->refclk = qdev_init_clock_in(DEVICE(s), "refclk", NULL, NULL, 0);
@@ -224,8 +224,8 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     sysbus_mmio_map(busdev, 0, POWER_BASE_ADDR);
 
     /* Flash Controller */
-    dev = DEVICE(&s->flash);
-    if (!sysbus_realize(SYS_BUS_DEVICE(&s->flash), errp)) {
+    dev = DEVICE(&s->flash1);
+    if (!sysbus_realize(SYS_BUS_DEVICE(&s->flash1), errp)) {
         return;
     }
     busdev = SYS_BUS_DEVICE(dev);
