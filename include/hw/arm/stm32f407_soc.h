@@ -54,19 +54,19 @@ OBJECT_DECLARE_SIMPLE_TYPE(STM32F407State, STM32F407_SOC)
 
 // #define FLASH_BASE_ADDR     0x40003C00
 
-// /* PortA ~ PortK */
-// #define STM_NUM_GPIOS       11
-// #define STM_GPIO_PORTA      0x40020000
-// #define STM_GPIO_PORTB      0x40020400
-// #define STM_GPIO_PORTC      0x40020800
-// #define STM_GPIO_PORTD      0x40020c00
-// #define STM_GPIO_PORTE      0x40021000
-// #define STM_GPIO_PORTF      0x40021400
-// #define STM_GPIO_PORTG      0x40021800
-// #define STM_GPIO_PORTH      0x40021c00
-// #define STM_GPIO_PORTI      0x40022000
-// #define STM_GPIO_PORTJ      0x40022400
-// #define STM_GPIO_PORTK      0x40022800
+/* PortA ~ PortK */
+#define STM_NUM_GPIOS       11
+#define STM_GPIO_PORTA      0x40020000
+#define STM_GPIO_PORTB      0x40020400
+#define STM_GPIO_PORTC      0x40020800
+#define STM_GPIO_PORTD      0x40020c00
+#define STM_GPIO_PORTE      0x40021000
+#define STM_GPIO_PORTF      0x40021400
+#define STM_GPIO_PORTG      0x40021800
+#define STM_GPIO_PORTH      0x40021c00
+#define STM_GPIO_PORTI      0x40022000
+#define STM_GPIO_PORTJ      0x40022400
+#define STM_GPIO_PORTK      0x40022800
 
 #define FLASH_BASE_ADDRESS  0x8000000
 #define FLASH_SIZE          0x100000
