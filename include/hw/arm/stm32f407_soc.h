@@ -15,7 +15,7 @@
 #include "hw/misc/stm32f4xx_exti.h"
 #include "hw/misc/stm32f4xx_pwr.h"
 #include "hw/timer/stm32f4xx_timer.h"
-// #include "hw/gpio/stm32f4xx_gpio.h"
+#include "hw/gpio/stm32f4xx_gpio.h"
 // #include "hw/misc/stm32f4xx_flash.h"
  
 #define TYPE_STM32F407_SOC "stm32f407-soc"
