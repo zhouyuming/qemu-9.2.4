@@ -16,11 +16,11 @@ static const uint32_t usart_addr[STM_NUM_USARTS] = {
     STM32F407_USART6
 };
 
-// static const uint32_t gpio_addr[STM_NUM_GPIOS] = {
-//     STM_GPIO_PORTA, STM_GPIO_PORTB, STM_GPIO_PORTC, STM_GPIO_PORTD,
-//     STM_GPIO_PORTE, STM_GPIO_PORTF, STM_GPIO_PORTG, STM_GPIO_PORTH,
-//     STM_GPIO_PORTI, STM_GPIO_PORTJ, STM_GPIO_PORTK
-// };
+static const uint32_t gpio_addr[STM_NUM_GPIOS] = {
+    STM_GPIO_PORTA, STM_GPIO_PORTB, STM_GPIO_PORTC, STM_GPIO_PORTD,
+    STM_GPIO_PORTE, STM_GPIO_PORTF, STM_GPIO_PORTG, STM_GPIO_PORTH,
+    STM_GPIO_PORTI, STM_GPIO_PORTJ, STM_GPIO_PORTK
+};
 
 static const int usart_irq[STM_NUM_USARTS] = {
     37, 38, 39, 71
@@ -58,6 +58,11 @@ static void stm32f407_soc_initfn(Object *obj)
                                 TYPE_STM32F4XX_TIMER);
     }
 
+    for (i = 0; i < STM_NUM_GPIOS; i++) {
+        object_initialize_child(obj, "timer[*]", &s->gpio[i],
+                                TYPE_STM32F4XX_GPIO);
+    }
+
     object_initialize_child(obj, "exti", &s->exti, TYPE_STM32F4XX_EXTI);
 
     object_initialize_child(obj, "power", &s->power, TYPE_STM32F4XX_POWER);
@@ -66,12 +71,6 @@ static void stm32f407_soc_initfn(Object *obj)
     s->refclk = qdev_init_clock_in(DEVICE(s), "refclk", NULL, NULL, 0);
     // sysbus_init_child_obj(obj, "flash", &s->flash, sizeof(s->flash),
     //                     TYPE_STM32F4XX_FLASH);
-
-    // for (i = 0; i < STM_NUM_GPIOS; i++) {
-    //     object_initialize(&s->gpio[i], sizeof(s->gpio[i]),
-    //                       TYPE_STM32F4XX_GPIO);
-    //     qdev_set_parent_bus(DEVICE(&s->gpio[i]), sysbus_get_default());
-    // }
 }
  
 static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
@@ -192,6 +191,16 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
         sysbus_connect_irq(busdev, 0, qdev_get_gpio_in(armv7m, timer_irq[i]));
     }
 
+    /* GPIO A to K */
+    for (i = 0; i < STM_NUM_GPIOS; i++) {
+        dev = DEVICE(&(s->gpio[i]));
+        if (!sysbus_realize(SYS_BUS_DEVICE(&s->timer[i]), errp)) {
+            return;
+        }
+        busdev = SYS_BUS_DEVICE(dev);
+        sysbus_mmio_map(busdev, 0, timer_addr[i]);
+    }
+
     /* EXTI device */
     dev = DEVICE(&s->exti);
     if (!sysbus_realize(SYS_BUS_DEVICE(&s->exti), errp)) {
@@ -213,18 +222,6 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     }
     busdev = SYS_BUS_DEVICE(dev);
     sysbus_mmio_map(busdev, 0, POWER_BASE_ADDR);
-
-    // /* GPIO A to K */
-    // for (i = 0; i < STM_NUM_GPIOS; i++) {
-    //     dev = DEVICE(&(s->gpio[i]));
-    //     object_property_set_bool(OBJECT(&s->gpio[i]), true, "realized", &err);
-    //     if (err != NULL) {
-    //         error_propagate(errp, err);
-    //         return;
-    //     }
-    //     busdev = SYS_BUS_DEVICE(dev);
-    //     sysbus_mmio_map(busdev, 0, gpio_addr[i]);
-    // }
 
     // /* Flash Controller */
     // dev = DEVICE(&s->flash);
@@ -258,15 +255,6 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     create_unimplemented_device("timer[9]",    0x40014000, 0x400);
     create_unimplemented_device("timer[10]",   0x40014400, 0x400);
     create_unimplemented_device("timer[11]",   0x40014800, 0x400);
-    create_unimplemented_device("GPIOA",       0x40020000, 0x400);
-    create_unimplemented_device("GPIOB",       0x40020400, 0x400);
-    create_unimplemented_device("GPIOC",       0x40020800, 0x400);
-    create_unimplemented_device("GPIOD",       0x40020C00, 0x400);
-    create_unimplemented_device("GPIOE",       0x40021000, 0x400);
-    create_unimplemented_device("GPIOF",       0x40021400, 0x400);
-    create_unimplemented_device("GPIOG",       0x40021800, 0x400);
-    create_unimplemented_device("GPIOH",       0x40021C00, 0x400);
-    create_unimplemented_device("GPIOI",       0x40022000, 0x400);
     create_unimplemented_device("CRC",         0x40023000, 0x400);
     create_unimplemented_device("Flash Int",   0x40023C00, 0x400);
     create_unimplemented_device("BKPSRAM",     0x40024000, 0x400);
