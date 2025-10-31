@@ -55,13 +55,12 @@ static void stm32f407_soc_initfn(Object *obj)
 
     object_initialize_child(obj, "exti", &s->exti, TYPE_STM32F4XX_EXTI);
 
+    object_initialize_child(obj, "power", &s->power, TYPE_STM32F4XX_POWER);
+
     s->sysclk = qdev_init_clock_in(DEVICE(s), "sysclk", NULL, NULL, 0);
     s->refclk = qdev_init_clock_in(DEVICE(s), "refclk", NULL, NULL, 0);
     // sysbus_init_child_obj(obj, "flash", &s->flash, sizeof(s->flash),
     //                     TYPE_STM32F4XX_FLASH);
-
-    // object_initialize(&s->power, sizeof(s->power), TYPE_STM32F4XX_POWER);
-    // qdev_set_parent_bus(DEVICE(&s->power), sysbus_get_default());
 
     // for (i = 0; i < STM_NUM_TIMERS; i++) {
     //     object_initialize(&s->timer[i], sizeof(s->timer[i]), TYPE_STM32F4XX_TIMER);
@@ -195,15 +194,13 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
         qdev_connect_gpio_out(DEVICE(&s->syscfg), i, qdev_get_gpio_in(dev, i));
     }
 
-    // /* System Power */
-    // dev = DEVICE(&s->power);
-    // object_property_set_bool(OBJECT(&s->power), true, "realized", &err);
-    // if (err != NULL) {
-    //     error_propagate(errp, err);
-    //     return;
-    // }
-    // busdev = SYS_BUS_DEVICE(dev);
-    // sysbus_mmio_map(busdev, 0, POWER_BASE_ADDR);
+    /* System Power */
+    dev = DEVICE(&s->power);
+    if (!sysbus_realize(SYS_BUS_DEVICE(&s->power), errp)) {
+        return;
+    }
+    busdev = SYS_BUS_DEVICE(dev);
+    sysbus_mmio_map(busdev, 0, POWER_BASE_ADDR);
 
     // /* GPIO A to K */
     // for (i = 0; i < STM_NUM_GPIOS; i++) {
@@ -256,7 +253,6 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     create_unimplemented_device("I2C3",        0x40005C00, 0x400);
     create_unimplemented_device("CAN1",        0x40006400, 0x400);
     create_unimplemented_device("CAN2",        0x40006800, 0x400);
-    create_unimplemented_device("PWR",         0x40007000, 0x400);
     create_unimplemented_device("DAC",         0x40007400, 0x400);
     create_unimplemented_device("timer[1]",    0x40010000, 0x400);
     create_unimplemented_device("timer[8]",    0x40010400, 0x400);
