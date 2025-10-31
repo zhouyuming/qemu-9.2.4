@@ -14,7 +14,7 @@
 #include "hw/char/stm32f4xx_usart.h"
 #include "hw/misc/stm32f4xx_exti.h"
 #include "hw/misc/stm32f4xx_pwr.h"
-// #include "hw/timer/stm32f4xx_timer.h"
+#include "hw/timer/stm32f4xx_timer.h"
 // #include "hw/gpio/stm32f4xx_gpio.h"
 // #include "hw/misc/stm32f4xx_flash.h"
  
