@@ -86,6 +86,7 @@ typedef struct STM32F407State {
     STM32F4XXPowerState power;
     STM32F4XXUsartState usart[STM_NUM_USARTS];
     STM32F4XXTimerState timer[STM_NUM_TIMERS];
+    STM32F4XXGPIOState gpio[STM_NUM_GPIOS];
 
     MemoryRegion ccm;
     MemoryRegion sram;
