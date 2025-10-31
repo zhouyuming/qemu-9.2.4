@@ -28,6 +28,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(STM32F407State, STM32F407_SOC)
 
 #define EXIT_BASE_ADDR      0x40013C00
 
+#define POWER_BASE_ADDR     0x40007000
+
 #define STM_NUM_USARTS      4
 #define STM32F407_USART1    0x40011000
 #define STM32F407_USART2    0x40004400
@@ -50,7 +52,6 @@ OBJECT_DECLARE_SIMPLE_TYPE(STM32F407State, STM32F407_SOC)
 // #define STM32F407_TIM13     0x40001c00
 // #define STM32F407_TIM14     0x40002000
 
-// #define POWER_BASE_ADDR     0x40007000
 // #define FLASH_BASE_ADDR     0x40003C00
 
 // /* PortA ~ PortK */
@@ -82,6 +83,7 @@ typedef struct STM32F407State {
     STM32RccState rcc;
     STM32F4xxSyscfgState syscfg;
     STM32F4xxExtiState exti;
+    STM32F4XXPowerState power;
     STM32F4XXUsartState usart[STM_NUM_USARTS];
 
     MemoryRegion ccm;
