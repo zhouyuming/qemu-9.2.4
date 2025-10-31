@@ -12,7 +12,7 @@
 #include "hw/misc/stm32_rcc.h"
 #include "hw/misc/stm32f4xx_syscfg.h"
 #include "hw/char/stm32f4xx_usart.h"
-// #include "hw/misc/stm32f4xx_exti.h"
+#include "hw/misc/stm32f4xx_exti.h"
 // #include "hw/misc/stm32f4xx_pwr.h"
 // #include "hw/timer/stm32f4xx_timer.h"
 // #include "hw/gpio/stm32f4xx_gpio.h"
@@ -26,7 +26,7 @@ OBJECT_DECLARE_SIMPLE_TYPE(STM32F407State, STM32F407_SOC)
 #define SYSCFG_BASE_ADDR    0x40013800
 #define SYSCFG_IRQ  71
 
-// #define EXIT_BASE_ADDRESS 0x40013C00
+#define EXIT_BASE_ADDR      0x40013C00
 
 #define STM_NUM_USARTS      4
 #define STM32F407_USART1    0x40011000
@@ -81,6 +81,7 @@ typedef struct STM32F407State {
 
     STM32RccState rcc;
     STM32F4xxSyscfgState syscfg;
+    STM32F4xxExtiState exti;
     STM32F4XXUsartState usart[STM_NUM_USARTS];
 
     MemoryRegion ccm;
