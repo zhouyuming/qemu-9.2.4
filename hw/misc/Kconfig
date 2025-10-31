@@ -96,6 +96,9 @@ config STM32F4XX_EXTI
 config STM32F4XX_PWR
     bool
 
+config STM32F4XX_FLASH
+    bool
+
 config STM32L4X5_EXTI
     bool
 
