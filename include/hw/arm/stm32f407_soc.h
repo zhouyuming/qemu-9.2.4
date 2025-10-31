@@ -16,7 +16,7 @@
 #include "hw/misc/stm32f4xx_pwr.h"
 #include "hw/timer/stm32f4xx_timer.h"
 #include "hw/gpio/stm32f4xx_gpio.h"
-// #include "hw/misc/stm32f4xx_flash.h"
+#include "hw/misc/stm32f4xx_flash.h"
  
 #define TYPE_STM32F407_SOC "stm32f407-soc"
 OBJECT_DECLARE_SIMPLE_TYPE(STM32F407State, STM32F407_SOC)
@@ -52,7 +52,7 @@ OBJECT_DECLARE_SIMPLE_TYPE(STM32F407State, STM32F407_SOC)
 #define STM32F407_TIM13     0x40001c00
 #define STM32F407_TIM14     0x40002000
 
-// #define FLASH_BASE_ADDR     0x40003C00
+#define FLASH_BASE_ADDR     0x40003C00
 
 /* PortA ~ PortK */
 #define STM_NUM_GPIOS       11
@@ -84,6 +84,7 @@ typedef struct STM32F407State {
     STM32F4xxSyscfgState syscfg;
     STM32F4xxExtiState exti;
     STM32F4XXPowerState power;
+    STM32F4XXFlashState flash;
     STM32F4XXUsartState usart[STM_NUM_USARTS];
     STM32F4XXTimerState timer[STM_NUM_TIMERS];
     STM32F4XXGPIOState gpio[STM_NUM_GPIOS];
