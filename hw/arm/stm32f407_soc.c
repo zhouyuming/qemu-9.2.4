@@ -6,10 +6,10 @@
 #include "hw/qdev-clock.h"
 #include "hw/misc/unimp.h"
 
-// static const uint32_t timer_addr[STM_NUM_TIMERS] = {
-//     STM32F407_TIM2, STM32F407_TIM3, STM32F407_TIM4,
-//     STM32F407_TIM5
-// };
+static const uint32_t timer_addr[STM_NUM_TIMERS] = {
+    STM32F407_TIM2, STM32F407_TIM3, STM32F407_TIM4,
+    STM32F407_TIM5
+};
 
 static const uint32_t usart_addr[STM_NUM_USARTS] = {
     STM32F407_USART1, STM32F407_USART2, STM32F407_USART3,
@@ -32,9 +32,9 @@ static const int exti_irq[] =
     40, 40, 40, 40, 40
 };
 
-// static const int timer_irq[STM_NUM_TIMERS] = {
-//     28, 29, 30, 50
-// };
+static const int timer_irq[STM_NUM_TIMERS] = {
+    28, 29, 30, 50
+};
  
 static void stm32f407_soc_initfn(Object *obj)
 {
@@ -53,6 +53,11 @@ static void stm32f407_soc_initfn(Object *obj)
                                 TYPE_STM32F4XX_USART);
     }
 
+    for (i = 0; i < STM_NUM_TIMERS; i++) {
+        object_initialize_child(obj, "timer[*]", &s->timer[i],
+                                TYPE_STM32F4XX_TIMER);
+    }
+
     object_initialize_child(obj, "exti", &s->exti, TYPE_STM32F4XX_EXTI);
 
     object_initialize_child(obj, "power", &s->power, TYPE_STM32F4XX_POWER);
@@ -61,11 +66,6 @@ static void stm32f407_soc_initfn(Object *obj)
     s->refclk = qdev_init_clock_in(DEVICE(s), "refclk", NULL, NULL, 0);
     // sysbus_init_child_obj(obj, "flash", &s->flash, sizeof(s->flash),
     //                     TYPE_STM32F4XX_FLASH);
-
-    // for (i = 0; i < STM_NUM_TIMERS; i++) {
-    //     object_initialize(&s->timer[i], sizeof(s->timer[i]), TYPE_STM32F4XX_TIMER);
-    //     qdev_set_parent_bus(DEVICE(&s->timer[i]), sysbus_get_default());
-    // }
 
     // for (i = 0; i < STM_NUM_GPIOS; i++) {
     //     object_initialize(&s->gpio[i], sizeof(s->gpio[i]),
@@ -180,6 +180,18 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
         sysbus_connect_irq(busdev, 0, qdev_get_gpio_in(armv7m, usart_irq[i]));
     }
 
+    /* Timer 2 to 5 */
+    for (i = 0; i < STM_NUM_TIMERS; i++) {
+        dev = DEVICE(&(s->timer[i]));
+        qdev_prop_set_uint64(dev, "clock-frequency", 1000000000);
+        if (!sysbus_realize(SYS_BUS_DEVICE(&s->timer[i]), errp)) {
+            return;
+        }
+        busdev = SYS_BUS_DEVICE(dev);
+        sysbus_mmio_map(busdev, 0, timer_addr[i]);
+        sysbus_connect_irq(busdev, 0, qdev_get_gpio_in(armv7m, timer_irq[i]));
+    }
+
     /* EXTI device */
     dev = DEVICE(&s->exti);
     if (!sysbus_realize(SYS_BUS_DEVICE(&s->exti), errp)) {
@@ -212,20 +224,6 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     //     }
     //     busdev = SYS_BUS_DEVICE(dev);
     //     sysbus_mmio_map(busdev, 0, gpio_addr[i]);
-    // }
-
-    // /* Timer 2 to 5 contoller */
-    // for (i = 0; i < STM_NUM_TIMERS; i++) {
-    //     dev = DEVICE(&(s->timer[i]));
-    //     qdev_prop_set_uint64(dev, "clock-frequency", 1000000000);
-    //     object_property_set_bool(OBJECT(&s->timer[i]), true, "realized", &err);
-    //     if (err != NULL) {
-    //         error_propagate(errp, err);
-    //         return;
-    //     }
-    //     busdev = SYS_BUS_DEVICE(dev);
-    //     sysbus_mmio_map(busdev, 0, timer_addr[i]);
-    //     sysbus_connect_irq(busdev, 0, qdev_get_gpio_in(armv7m, timer_irq[i]));
     // }
 
     // /* Flash Controller */
