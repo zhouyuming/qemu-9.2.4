@@ -140,6 +140,12 @@ config NETDUINOPLUS2
     depends on TCG && ARM
     select STM32F405_SOC
 
+config STM32F407_ST_DISCOVERY
+    bool
+    default y
+    depends on TCG && ARM
+    select STM32F407_SOC
+
 config OLIMEX_STM32_H405
     bool
     default y
