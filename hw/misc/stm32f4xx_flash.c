@@ -20,19 +20,19 @@
 
 #define DB_PRINT(fmt, args...) DB_PRINT_L(1, fmt, ## args)
 
-static void stm32f4xx_flash_reset(DeviceState *dev)
-{
-    STM32F4XXFlashState *s = STM32F4XX_FLASH(dev);
+// static void stm32f4xx_flash_reset(DeviceState *dev)
+// {
+//     STM32F4XXFlashState *s = STM32F4XX_FLASH(dev);
 
-    s->flash_acr        = 0x00000030;
-    s->flash_keyr       = 0x00000000;
-    s->flash_optkeyr    = 0x00000000;
-    s->flash_sr         = 0x00000000;
-    s->flash_cr         = 0x00000000;
-    s->flash_ar      = 0x0fffaaed;
-    s->flash_obr     = 0x0fff0000;
-    s->flash_wrpr     = 0x0fff0000;
-}
+//     s->flash_acr        = 0x00000030;
+//     s->flash_keyr       = 0x00000000;
+//     s->flash_optkeyr    = 0x00000000;
+//     s->flash_sr         = 0x00000000;
+//     s->flash_cr         = 0x00000000;
+//     s->flash_ar      = 0x0fffaaed;
+//     s->flash_obr     = 0x0fff0000;
+//     s->flash_wrpr     = 0x0fff0000;
+// }
 
 static uint64_t stm32f4xx_flash_read(void *opaque, hwaddr addr,
                                      unsigned int size)
