@@ -194,11 +194,11 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     /* GPIO A to K */
     for (i = 0; i < STM_NUM_GPIOS; i++) {
         dev = DEVICE(&(s->gpio[i]));
-        if (!sysbus_realize(SYS_BUS_DEVICE(&s->timer[i]), errp)) {
+        if (!sysbus_realize(SYS_BUS_DEVICE(&s->gpio[i]), errp)) {
             return;
         }
         busdev = SYS_BUS_DEVICE(dev);
-        sysbus_mmio_map(busdev, 0, timer_addr[i]);
+        sysbus_mmio_map(busdev, 0, gpio_addr[i]);
     }
 
     /* EXTI device */
