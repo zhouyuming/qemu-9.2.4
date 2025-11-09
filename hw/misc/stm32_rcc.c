@@ -46,6 +46,8 @@ static uint64_t stm32_rcc_read(void *opaque, hwaddr addr, unsigned int size)
     if (addr > STM32_RCC_DCKCFGR2) {
         qemu_log_mask(LOG_GUEST_ERROR, "%s: Bad offset 0x%"HWADDR_PRIx"\n",
                       __func__, addr);
+    } else if (addr == STM32_RCC_CR) {
+         value = (s->regs[addr >> 2] | 0x00000002);
     } else {
         value = s->regs[addr >> 2];
     }
