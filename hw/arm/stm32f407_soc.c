@@ -16,11 +16,11 @@ static const uint32_t usart_addr[STM_NUM_USARTS] = {
     STM32F407_USART6
 };
 
-static const uint32_t gpio_addr[STM_NUM_GPIOS] = {
-    STM_GPIO_PORTA, STM_GPIO_PORTB, STM_GPIO_PORTC, STM_GPIO_PORTD,
-    STM_GPIO_PORTE, STM_GPIO_PORTF, STM_GPIO_PORTG, STM_GPIO_PORTH,
-    STM_GPIO_PORTI, STM_GPIO_PORTJ, STM_GPIO_PORTK
-};
+// static const uint32_t gpio_addr[STM_NUM_GPIOS] = {
+//     STM_GPIO_PORTA, STM_GPIO_PORTB, STM_GPIO_PORTC, STM_GPIO_PORTD,
+//     STM_GPIO_PORTE, STM_GPIO_PORTF, STM_GPIO_PORTG, STM_GPIO_PORTH,
+//     STM_GPIO_PORTI, STM_GPIO_PORTJ, STM_GPIO_PORTK
+// };
 
 static const int usart_irq[STM_NUM_USARTS] = {
     37, 38, 39, 71
@@ -58,10 +58,10 @@ static void stm32f407_soc_initfn(Object *obj)
                                 TYPE_STM32F4XX_TIMER);
     }
 
-    for (i = 0; i < STM_NUM_GPIOS; i++) {
-        object_initialize_child(obj, "timer[*]", &s->gpio[i],
-                                TYPE_STM32F4XX_GPIO);
-    }
+    // for (i = 0; i < STM_NUM_GPIOS; i++) {
+    //     object_initialize_child(obj, "gpio[*]", &s->gpio[i],
+    //                             TYPE_STM32F4XX_GPIO);
+    // }
 
     object_initialize_child(obj, "exti", &s->exti, TYPE_STM32F4XX_EXTI);
 
@@ -191,15 +191,15 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
         sysbus_connect_irq(busdev, 0, qdev_get_gpio_in(armv7m, timer_irq[i]));
     }
 
-    /* GPIO A to K */
-    for (i = 0; i < STM_NUM_GPIOS; i++) {
-        dev = DEVICE(&(s->gpio[i]));
-        if (!sysbus_realize(SYS_BUS_DEVICE(&s->gpio[i]), errp)) {
-            return;
-        }
-        busdev = SYS_BUS_DEVICE(dev);
-        sysbus_mmio_map(busdev, 0, gpio_addr[i]);
-    }
+    // /* GPIO A to K */
+    // for (i = 0; i < STM_NUM_GPIOS; i++) {
+    //     dev = DEVICE(&(s->gpio[i]));
+    //     if (!sysbus_realize(SYS_BUS_DEVICE(&s->gpio[i]), errp)) {
+    //         return;
+    //     }
+    //     busdev = SYS_BUS_DEVICE(dev);
+    //     sysbus_mmio_map(busdev, 0, gpio_addr[i]);
+    // }
 
     /* EXTI device */
     dev = DEVICE(&s->exti);
@@ -254,7 +254,7 @@ static void stm32f407_soc_realize(DeviceState *dev_soc, Error **errp)
     create_unimplemented_device("timer[10]",   0x40014400, 0x400);
     create_unimplemented_device("timer[11]",   0x40014800, 0x400);
     create_unimplemented_device("CRC",         0x40023000, 0x400);
-    create_unimplemented_device("Flash Int",   0x40023C00, 0x400);
+    // create_unimplemented_device("Flash Int",   0x40023C00, 0x400);
     create_unimplemented_device("BKPSRAM",     0x40024000, 0x400);
     create_unimplemented_device("DMA1",        0x40026000, 0x400);
     create_unimplemented_device("DMA2",        0x40026400, 0x400);
